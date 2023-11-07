@@ -5,11 +5,6 @@ import uvicorn
 from datetime import datetime,timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from dbClass import *
-import os
-
-mongo_host = os.environ.get("HOST_NAME","127.0.0.1")
-objDb = Db(mongo_host)
 
 SECRET_KEY = "c583e6ebe05d77b74b5b65277efceffee5ecf806045fcb37f54b29862465f215"
 ALGORITHM = "HS256"
@@ -136,17 +131,6 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
 @app.get("/users/some")
 async def some(current_user: UserInDb = Depends(get_current_active_user)):
     return {"message":"protegiendo esta ruta"}
-
-
-#obtener todos los registros de la base de datos
-@app.get("/data")
-def data(current_user = Depends(get_current_active_user)):
-    datos = objDb.getAllData()
-    for dato in datos:
-        dato['_id'] = str(dato['_id'])
-
-    return {"data":datos}
-
 
 if __name__ == '__main__':
     uvicorn.run(app,host="0.0.0.0",port=8000)

@@ -10,13 +10,22 @@ credentials = {
     "password": "tim1234"
 }
 
+###################
+# CONJUNTO DE API'S
+###################
+
 #url del token
 auth_url="http://localhost:8000/token"
 
 #info del user
 user_info_url = "http://localhost:8000/users/me/"
 user_items_url = "http://localhost:8000/users/me/items"
+
+#info de cualquier cosa
 some_url = "http://localhost:8000/users/some"
+
+#obtener datos desde la base de datos
+url_data = "http://localhost:8000/data"
 
 #funcion de obtener data del token
 async def get_access_token():
@@ -52,6 +61,7 @@ if access_token:
 user_info = asyncio.run(get_protected_data(user_info_url))
 user_items = asyncio.run(get_protected_data(user_items_url))
 some_data = asyncio.run(get_protected_data(some_url))
+db_data = asyncio.run(get_protected_data(url_data))
 
 if user_info:
     print("Datos de usuario:")
@@ -64,3 +74,7 @@ if user_items:
 if some_url:
     print(f"Datos de ruta protegida '{some_url}'")
     print(some_data)
+
+if db_data:
+    print("Datos desde Mongodb:::")
+    print(db_data)
