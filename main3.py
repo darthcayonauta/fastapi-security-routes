@@ -147,6 +147,59 @@ def data(current_user = Depends(get_current_active_user)):
 
     return {"data":datos}
 
+#2. obtener un registro
+@app.get("/data/{id}")
+def dataOne(id:str, current_user = Depends(get_current_active_user)):
+    try:
+        data = objDb.getData(id)
+        
+        if isinstance(data,dict):
+            data['_id']= str(data['_id'])
+            return {"data":data}
+        else:
+            raise HTTPException(status_code=404,detail="data no encontrada")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+#3. ingresar un registro
+@app.post("/data")
+def insert_data(data:dict, current_user=Depends(get_current_active_user)):
+    try:
+        data['date'] = datetime.now()
+        inserted = objDb.insertOne(data)
+
+        if inserted:
+            return {"message":f"Registro ingresado con el ID: {inserted}"}
+        else:
+            raise HTTPException(status_code=500, detail="Error al insertar el registro")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+#4. Eliminar
+@app.delete("/data/{id}")
+def delete_data_by_id(id:str,current_user = Depends(get_current_active_user)):
+    try:
+        result = objDb.deleteData(id)
+        if result == "Registro Eliminado":
+            return {"message": result}
+        elif result == "Registro no encontrado":
+            raise HTTPException(status_code=404, detail="registro no encontrado")
+        else:
+            raise HTTPException(status_code=500, detail="Error al eliminar el registro")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+#5. Update
+@app.put("/data/{id}")
+def update_data_by_id(id:str,data:dict,current_user = Depends(get_current_active_user)):
+    result = objDb.updateData(id,data)
+    if result == "Registro actualizado con exito":
+        return {"message":result}
+    elif result == "Registro no encontrado":
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    else:
+        raise HTTPException(status_code=500, detail="Error al actualizar el registro")
+
 
 if __name__ == '__main__':
     uvicorn.run(app,host="0.0.0.0",port=8000)
